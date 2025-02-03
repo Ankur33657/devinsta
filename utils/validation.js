@@ -4,7 +4,7 @@ const isValidation = async (req) => {
   try{
       const isPresent = await User.findOne({ emailId: req.body.emailId }); 
       if (isPresent) { 
-        throw new Error("Email already exists");
+        return new Error("Email already exists");
       }
   }
   catch(error){
