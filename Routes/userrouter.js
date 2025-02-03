@@ -3,11 +3,13 @@ const router=express.Router();
 const User=require('../Model/user');
 const Bcrypt=require('bcrypt');
 const {isValidation}= require('../utils/validation')
+const jwt = require('jsonwebtoken');
+
+
 router.post('/signup',async(req,res)=>{
     try{
         isValidation(req);
         const {firstName,lastName,emailId,password}=req.body;
-       //add hashing
        const passwordHash=await Bcrypt.hash(password,12)
        const user=new User({
         firstName:firstName,
@@ -34,6 +36,11 @@ router.post('/login',async(req,res)=>{
     if(!isCorrectPassword){
         throw new Error("Invalid Credentials");
     }
+    //adding jwt
+    const token=await jwt.sign({_id:user._id},process.env.SECRET_KEY);
+   
+    //Adding tokens to cookies
+    res.cookie("token",token);
     res.status(200).json("Login Succesfully");
    }
    catch(error){
