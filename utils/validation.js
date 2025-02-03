@@ -1,8 +1,8 @@
 const User = require('../Model/user'); 
 
-const isValidation = async (user) => {
+const isValidation = async (req) => {
   try{
-      const isPresent = await User.findOne({ emailId: user.emailId }); 
+      const isPresent = await User.findOne({ emailId: req.body.emailId }); 
       if (isPresent) { 
         throw new Error("Email already exists");
       }

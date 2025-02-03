@@ -26,12 +26,12 @@ const UserSchema=mongoose.Schema({
     password:{
         type:String,
         required:true,
-        maxLength:25,
         validate(value){
             if(!validator.isStrongPassword(value)){
                 throw new Error("Invalid password");
             }
         }
-    }
+    },
+
 })
 module.exports=mongoose.model('user',UserSchema);
