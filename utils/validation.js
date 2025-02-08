@@ -8,9 +8,18 @@ const isValidation = async (req) => {
       }
   }
   catch(error){
-    console.log("Email is already exist");
+    return new Error("Email alredy exit");
   }
   
 };
 
-module.exports = { isValidation };
+const isUpdate = async(req)=>{
+  try{
+    if(req.body.email!=null)
+      throw new Error("Email Id not be updated");
+  }
+  catch(error){
+    return new Error({error:error.message});
+  }
+}
+module.exports = { isValidation,isUpdate };

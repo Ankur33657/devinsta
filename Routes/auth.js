@@ -19,7 +19,7 @@ const UserAuth=async(req,res,next)=>{
 
     }
     catch(error){
-        res.status(400).send("Invalid request");
+        res.status(400).json("Login first");
     }
 }
 
