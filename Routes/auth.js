@@ -8,7 +8,7 @@ const UserAuth=async(req,res,next)=>{
         if(!token){
             throw new Error("Invalid token!!");
         }
-        const decodemsg= await jwt.verify(token,process.env.SECRET_KEY);
+        const decodemsg= jwt.verify(token,process.env.SECRET_KEY);
         const {_id}=decodemsg;
         const user=await User.findById(_id);
         if(!user){
@@ -19,7 +19,7 @@ const UserAuth=async(req,res,next)=>{
 
     }
     catch(error){
-        res.status(400).send("Invalid request");
+        res.status(400).json("Login first");
     }
 }
 
