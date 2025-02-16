@@ -5,14 +5,18 @@ const InitializingSocket= (server)=>{
         origin:'http://localhost:5173'
     },
    });
-   io.on("connection",(server)=>{
+   io.on("connection",(socket)=>{
     //handle event
 
-    socket.on("joinchat",()=>{
-
+    socket.on("joinchat",({targetuserId,UserId})=>{
+      const room=[targetuserId,UserId].sort().join("_");
+      console.log("Joining room ",room);
+      socket.join(room);
     })
-    socket.on("sendmessage",()=>{
-
+    socket.on("sendmessage",({targetuserId,UserId,message})=>{
+     const room =[targetuserId,UserId].sort().join("_");
+     io.to(room).emit("messagerecieve" , {message});
+    
     })
 
     socket.on("disconnect",()=>{
