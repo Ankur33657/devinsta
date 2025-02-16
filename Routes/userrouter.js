@@ -8,10 +8,17 @@ const {UserAuth} =require('./auth')
 
 router.post('/signup',async(req,res)=>{
     try{
+<<<<<<< HEAD
        
         const {firstName,lastName,emailId,password}=req.body;
         const isPresent=await User.findOne({emailId:emailId});
         if(isPresent)throw new Error("Email already exits1");
+=======
+        
+        const {firstName,lastName,emailId,password}=req.body;
+        const isPresent=await User.findOne({emailId:emailId});
+        if(isPresent)throw new Error("Email already exits");
+>>>>>>> 860e64d3d546d3919ddb98f6339271865758067c
        const passwordHash=await Bcrypt.hash(password,12)
        const user=new User({
         firstName:firstName,
@@ -27,6 +34,7 @@ router.post('/signup',async(req,res)=>{
     }
 })
 
+<<<<<<< HEAD
 router.post("/login", async (req, res) => {
     try {
       const { emailId, password } = req.body;
@@ -54,6 +62,15 @@ router.post("/login", async (req, res) => {
       res.status(200).json({ message: "Login successful", user });
     } catch (error) {
       res.status(400).json({ error: error.message });
+=======
+router.post('/login',async(req,res)=>{
+   const {emailId,password}=req.body;
+   emailId.toLowerCase();
+   try{
+    const user=await User.findOne({emailId:emailId});
+    if(!user){
+        throw new Error("Invalid Credentials");
+>>>>>>> 860e64d3d546d3919ddb98f6339271865758067c
     }
   });
   
@@ -70,6 +87,21 @@ router.get('/logout',async(req,res)=>{
 
 })
 
+<<<<<<< HEAD
+=======
+router.get('/logout',async(req,res)=>{
+    try{
+        
+        res.clearCookie('token',null).json("Logout Successfully");
+
+    }
+    catch(error){
+        res.status(200).json({Error:Error.message});
+    }
+
+})
+
+>>>>>>> 860e64d3d546d3919ddb98f6339271865758067c
 router.get('/profile',UserAuth,async(req,res)=>{
     try{
         if(!req.user){
@@ -85,7 +117,11 @@ router.patch('/profile/edit', UserAuth,async(req,res)=>{
     try{
         const user=req.user;
         const update=req.body;
+<<<<<<< HEAD
      
+=======
+       
+>>>>>>> 860e64d3d546d3919ddb98f6339271865758067c
         if(update.emailId)throw new Error("Email should not be updated");
         if(update.password)throw new Error("Password should not be updated");
         const updatedData=await User.findOneAndUpdate({_id:user._id},update,{runValidators:true});
@@ -93,10 +129,17 @@ router.patch('/profile/edit', UserAuth,async(req,res)=>{
         res.status(200).json("update successfully");
 
     }catch(error){
+<<<<<<< HEAD
         res.status(400).json(error.message);
     }
 
         
+=======
+        res.status(400).json({error:error.message});
+    }
+
+    
+>>>>>>> 860e64d3d546d3919ddb98f6339271865758067c
 })
 
 
