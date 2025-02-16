@@ -2,10 +2,7 @@ const express=require("express");
 const connectionRouter=express.Router();
 const connection = require("../Model/connection");
 const {UserAuth} =require('./auth');
-<<<<<<< HEAD
 const User=require('../Model/user')
-=======
->>>>>>> 860e64d3d546d3919ddb98f6339271865758067c
 const mongoose=require('mongoose');
 
 connectionRouter.post('/connection/request/:status/:userId',UserAuth,async(req,res)=>{
@@ -67,7 +64,6 @@ connectionRouter.post('/connection/review/:status/:connectionId',UserAuth,async(
 
 })
 
-<<<<<<< HEAD
 connectionRouter.get('/connection/viewallconnection', UserAuth, async (req, res) => {
   try {
     const userId = req.user._id;
@@ -152,43 +148,6 @@ connectionRouter.get('/allcountconnection',UserAuth,async(req,res)=>{
      catch(err){
       res.status(400).json(err.message);
      }
-=======
-connectionRouter.get('/connection/viewallconnection',UserAuth,async(req,res)=>{
-  try{
-    const userId=req.user._id;
-    
-    const view=await connection.find({
-      $and:[
-        {$or:[
-          {fromUserId:userId},
-          {toUserId:userId}
-       ]},
-       {status:"accepted"}
-      ]
-    
-    
-    })
-    res.status(200).json(view);
-  }
-  catch(error){
-    res.status(400).json({error});
-  }
-})
-
-connectionRouter.get('/connection/allpendingrequest',UserAuth,async(req,res)=>{
-  try{
-    const userId=req.user._id;
-    const pending=await connection.find({
-      toUserId:userId,
-      status:"interested"
-    })
-    res.status(200).json(pending);
-
-  }
-  catch(error){
-    res.status(400).json(error);
-  }
->>>>>>> 860e64d3d546d3919ddb98f6339271865758067c
 })
 
 module.exports=
