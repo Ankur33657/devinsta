@@ -12,7 +12,7 @@ const ChatRouter = require('./Routes/chat');
 require('dotenv').config();
 const app=express();
 app.use(cors({
-  origin: "https://devinsta-frontend.vercel.app/" ,
+  origin: "https://devinsta-frontend.vercel.app" ,
    credentials: true,
   }));
 app.use(express.json());

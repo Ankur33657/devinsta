@@ -5,7 +5,7 @@ const message = require("../Model/message");
 const InitializingSocket = (server) => {
   const io = new Server(server, {
     cors: {
-      origin: "https://devinsta-frontend.vercel.app/",
+      origin: "https://devinsta-frontend.vercel.app",
     },
   });
 
