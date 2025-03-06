@@ -5,7 +5,8 @@ const connectionRouter=require('./Routes/ConnectionRoute');
 const cookieParser = require('cookie-parser');
 const cors = require('cors')
 const http=require('http');
-const InitializingSocket=require('./utils/Socket')
+const InitializingSocket=require('./utils/Socket');
+const ChatRouter = require('./Routes/chat');
 
 
 require('dotenv').config();
@@ -22,6 +23,7 @@ InitializingSocket(server);
 
 app.use('/api',userRouter);
 app.use('/api',connectionRouter);
+app.use('/api',ChatRouter);
 mongoose.connect(process.env.MONGO_URL)
 .then(()=>{
     server.listen(process.env.PORT,()=>{

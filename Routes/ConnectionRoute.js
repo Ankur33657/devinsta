@@ -10,57 +10,80 @@ connectionRouter.post('/connection/request/:status/:userId',UserAuth,async(req,r
       const fromuser=req.user._id;
       const touser=req.params.userId;
       const status=req.params.status;
-      if(fromuser==touser){
+      
+      if(fromuser.toString()===touser.toString()){
         throw new Error("Invalid connections");
       }
       else if(!(status==="interested" || status==="ignored")){
         throw new Error("Invalid connetions");
       }
+     
       const isConnection=await connection.findOne({
         $or:[
         {fromUserId:fromuser,toUserId:touser},
         {fromUserId:touser,toUserId:fromuser}
         ]
       },{runValidator:true})
+    
       if(isConnection){
         throw new Error("Invalid connections");
       }
+      if(status ==="ignored"){
+        return res.status(200).json("You ignored the profile");
+        
+      }
+      
       const data=new connection({
         fromUserId:fromuser,
         toUserId:touser,
         status:status
       })
+    
       await data.save();
-      res.send("Connection successfully");
+      return res.status(200).send("Connection successfully");
   }
   catch(error){
-    res.status(400).json(error.message);
+    res.status(400).json("Final error");
   }
 })
 
-connectionRouter.post('/connection/review/:status/:connectionId',UserAuth,async(req,res)=>{
-  try{
-    const loginUser=req.user._id;
-    const {status,connectionId}=req.params;
-    if(!(status=='accepted' || status=='rejected')){
-       throw new Error("Invalid request");
+connectionRouter.post('/connection/review/:statusReview/:connectionId',UserAuth,async(req,res)=>{
+  try {
+    const loginUser = req.user._id;
+    const { statusReview, connectionId } = req.params;
+
+    // Validate statusReview
+    if (statusReview !== "accepted" && statusReview !== "rejected") {
+        throw new Error("Invalid request1");
     }
-    const user=await connection.findById({
-      _id: new mongoose.Types.ObjectId(connectionId), 
-     status:"interested",
-     toUserId:loginUser
-    },{runValidator:true})
-    if(!user){
-      throw new Error("Invalid request");
+
+    // Find user with matching criteria
+    const user = await connection.findOne({
+        _id: new mongoose.Types.ObjectId(connectionId),
+        status: "interested",
+        toUserId: loginUser
+    });
+
+    // Check if the user exists
+    if (!user) {
+        throw new Error("Invalid request2");
     }
-    console.log(user);
-    user.status=status;
-    await user.save()
-    res.status(200).json("Requested");
-  }
-  catch(error){
-    res.status(400).json(error.message);
-  }
+
+    // If status is 'rejected', delete the user
+    if (statusReview === "rejected") {
+        await connection.deleteOne({ _id: connectionId });
+        return res.status(200).json({ message: "User connection rejected and deleted" });
+    }
+
+    // Otherwise, update the status
+    user.status = statusReview;
+    await user.save();
+
+    res.status(200).json({ message: "Status updated successfully" });
+} catch (error) {
+    res.status(400).json({ error: error.message });
+}
+
 
 })
 
@@ -148,6 +171,57 @@ connectionRouter.get('/allcountconnection',UserAuth,async(req,res)=>{
      catch(err){
       res.status(400).json(err.message);
      }
+})
+
+connectionRouter.get('/feed',UserAuth,async(req,res)=>{
+  try{
+    const userId = req.user._id;
+
+    // Get all users (assuming 'User' is your users collection model)
+    const allUsers = await User.find({_id: { $ne: userId }});
+
+    
+    // Get connected users based on the user's connections
+    const connectedUsers = await connection.find({
+      $and: [
+        {
+          $or: [
+            { fromUserId: userId },
+            { toUserId: userId }
+          ]
+        },
+        {$or:[
+          { status: "accepted" },
+          {status:"interested"}
+          
+        ]}
+      ]
+    }).select('fromUserId toUserId');
+
+    let filteredConnectedUsers =[];
+    for (const c of connectedUsers) {
+      if(c.fromUserId.toString()===userId.toString()){
+        filteredConnectedUsers.push(c.toUserId);
+      }
+      else{
+        filteredConnectedUsers.push(c.fromUserId);
+      }
+    }
+    let feeduser=[];
+    for(const c of allUsers){
+      if(!filteredConnectedUsers.find(x => x.toString() === c._id.toString())){
+        feeduser.push(c);
+        
+      }
+    }
+
+    res.status(200).json(feeduser);
+
+  }
+  catch(error){
+    res.status(400).json(error.message);
+  }
+   
 })
 
 module.exports=
