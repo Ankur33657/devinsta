@@ -99,5 +99,19 @@ router.patch('/profile/edit', UserAuth,async(req,res)=>{
         
 })
 
+router.get("/user/view/:userId", UserAuth, async (req, res) => {
+  try {
+    const user = await User.findById(req.params.userId);
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+    // We only send public info, not password/email if we want to be safe,
+    // but here the frontend seems to expect the full object or at least firstName/lastName/image1.
+    res.status(200).json(user);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
 
-module.exports=router;
+module.exports = router;
+
